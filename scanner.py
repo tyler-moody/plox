@@ -1,4 +1,4 @@
-from main import Token, TokenType
+from tok import Token, TokenType
 
 from typing import List
 

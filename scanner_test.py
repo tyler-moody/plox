@@ -1,13 +1,15 @@
 import unittest
 
-from main import Token, TokenType
 from scanner import Scanner
+from tok import Token, TokenType
 
 
 class ScannerTest(unittest.TestCase):
     def test_scan_empty_file(self):
         scanner = Scanner('')
-        self.assertEqual([Token(TokenType.EOF, '', None, 1)], scanner.tokens())
+        expected = [Token(TokenType.EOF, '', None, 1)]
+        actual = scanner.tokens()
+        self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
 
 
 if __name__ == '__main__':
