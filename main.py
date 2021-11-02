@@ -84,13 +84,29 @@ class Token:
         self._literal = literal
         self._line = line
 
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Token):
+            return False
+        return (
+            self.__class__ == other.__class__
+            and self._type == other._type
+            and self._lexeme == other._lexeme
+            and self._literal == other._literal
+            and self._line == other._line
+        )
+
 
 class Scanner:
     def __init__(self, text: str):
         self._text = text
+        self._tokens: List[Token] = []
+        self._start = 0
+        self._current = 0
+        self._line = 1
 
     def tokens(self) -> List[str]:
-        return self._text.split()
+        self._tokens.append(Token(TokenType.EOF, '', None, self._line))
+        return self._tokens
 
 
 #  __  __       _
