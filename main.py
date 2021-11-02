@@ -2,6 +2,8 @@
 
 import argparse
 
+from scanner import Scanner
+
 #  __  __       _
 # |  \/  | __ _(_)_ __
 # | |\/| |/ _` | | '_ \
