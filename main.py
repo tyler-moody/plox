@@ -3,8 +3,6 @@
 import argparse
 import enum
 
-from typing import List
-
 #  _____                       _   _                 _ _ _
 # | ____|_ __ _ __ ___  _ __  | | | | __ _ _ __   __| | (_)_ __   __ _
 # |  _| | '__| '__/ _ \| '__| | |_| |/ _` | '_ \ / _` | | | '_ \ / _` |
@@ -19,15 +17,6 @@ def report(line: int, where: str, message: str) -> None:
 
 def error(line: int, message: str) -> None:
     return (line, '', message)
-
-
-#  ____
-# / ___|  ___ __ _ _ __  _ __   ___ _ __
-# \___ \ / __/ _` | '_ \| '_ \ / _ \ '__|
-#  ___) | (_| (_| | | | | | | |  __/ |
-# |____/ \___\__,_|_| |_|_| |_|\___|_|
-#  FIGLET: Scanner
-#
 
 
 class TokenType(enum.Enum):
@@ -94,19 +83,6 @@ class Token:
             and self._literal == other._literal
             and self._line == other._line
         )
-
-
-class Scanner:
-    def __init__(self, text: str):
-        self._text = text
-        self._tokens: List[Token] = []
-        self._start = 0
-        self._current = 0
-        self._line = 1
-
-    def tokens(self) -> List[str]:
-        self._tokens.append(Token(TokenType.EOF, '', None, self._line))
-        return self._tokens
 
 
 #  __  __       _
