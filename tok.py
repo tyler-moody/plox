@@ -65,3 +65,6 @@ class Token:
             and self._literal == other._literal
             and self._line == other._line
         )
+
+    def __str__(self) -> str:
+        return f'{self.__class__.__name__}(type={self._type}, lexeme="{self._lexeme}", literal={self._literal}, line={self._line})'
