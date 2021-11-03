@@ -15,6 +15,10 @@ class ScannerTest(unittest.TestCase):
         scanner = Scanner('')
         self.assertTrue(scanner.isAtEnd())
 
+    def test_isAtEnd_false(self):
+        scanner = Scanner('a')
+        self.assertFalse(scanner.isAtEnd())
+
 
 if __name__ == '__main__':
     unittest.main()
