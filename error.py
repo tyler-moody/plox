@@ -3,4 +3,4 @@ def report(line: int, where: str, message: str) -> None:
 
 
 def error(line: int, message: str) -> None:
-    return (line, '', message)
+    report(line, '', message)
