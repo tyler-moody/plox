@@ -1,7 +1,24 @@
 import unittest
 
+from typing import List, Tuple
+
+from error import ErrorReporter
 from scanner import Scanner
 from tok import Token, TokenType
+
+
+class TestErrorReporter(ErrorReporter):
+    def __init__(self):
+        self._errors = []
+
+    def report(self, line: int, where: int, message: str) -> None:
+        self._errors.append((line, where, message))
+
+    def error(self, line: int, message: str) -> None:
+        self.report(line, '', message)
+
+    def errors(self) -> List[Tuple[int, str, str]]:
+        return self._errors
 
 
 class ScannerTest(unittest.TestCase):
@@ -46,8 +63,9 @@ class ScannerTest(unittest.TestCase):
         self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
 
     def test_scan_unexpected_character(self):
-        scanner = Scanner('/')
+        error_reporter = TestErrorReporter()
+        scanner = Scanner(text='/', error_reporter=error_reporter)
         scanner.tokens()
-        # TODO make an error reporting interface, default to printing implementation, inject a test
-        # one here, assert that the expected error is reported
-        self.assertTrue(False)
+        expected = [(1, '', 'Unexpected character "/"')]
+        actual = error_reporter.errors()
+        self.assertTrue(expected == actual)

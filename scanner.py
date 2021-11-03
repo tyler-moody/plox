@@ -1,16 +1,19 @@
 from tok import Token, TokenType
 
-from error import error
+from error import ErrorReporter, StdoutErrorReporter
 from typing import List, Optional
 
 
 class Scanner:
-    def __init__(self, text: str):
+    def __init__(
+        self, text: str, error_reporter: ErrorReporter = StdoutErrorReporter()
+    ):
         self._text = text
         self._tokens: List[Token] = []
         self._start = 0
         self._current = 0
         self._line = 1
+        self._error_reporter = error_reporter
 
     def tokens(self) -> List[str]:
         while not self.isAtEnd():
@@ -42,7 +45,10 @@ class Scanner:
         elif c == '*':
             self.addToken(TokenType.STAR)
         else:
-            error(self._line, f'Unexpected character "{c}"')
+            self._error_reporter.error(
+                line=self._line,
+                message=f'Unexpected character "{c}"',
+            )
 
     def advance(self) -> Optional[str]:
         if self._current < len(self._text):
