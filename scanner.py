@@ -14,3 +14,6 @@ class Scanner:
     def tokens(self) -> List[str]:
         self._tokens.append(Token(TokenType.EOF, '', None, self._line))
         return self._tokens
+
+    def isAtEnd(self) -> bool:
+        return self._current >= len(self._text)

@@ -11,6 +11,10 @@ class ScannerTest(unittest.TestCase):
         actual = scanner.tokens()
         self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
 
+    def test_isAtEnd_empty(self):
+        scanner = Scanner('')
+        self.assertTrue(scanner.isAtEnd())
+
 
 if __name__ == '__main__':
     unittest.main()
