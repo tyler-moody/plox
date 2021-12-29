@@ -164,6 +164,19 @@ class ScannerTest(unittest.TestCase):
         actual = scanner.tokens()
         self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
 
+    def test_scan_number_literal(self):
+        text = '5 5.5'
+        expected = [
+            Token(TokenType.NUMBER, '5', 5, 1),
+            Token(TokenType.NUMBER, '5.5', 5.5, 1),
+            Token(TokenType.EOF, '', None, 1),
+        ]
+        scanner = Scanner(text)
+        actual = scanner.tokens()
+        for t in actual:
+            print(t)
+        self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
+
     def test_scan_unexpected_character(self):
         error_reporter = TestErrorReporter()
         scanner = Scanner(text='^', error_reporter=error_reporter)

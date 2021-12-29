@@ -36,6 +36,11 @@ class Scanner:
                 return '\0'
             return self._text[self._current]
 
+        def peekNext() -> str:
+            if self._current + 1 >= len(self._text):
+                return '\0'
+            return self._text[self._current + 1]
+
         def string() -> None:
             while peek() != '"' and not self.isAtEnd():
                 if peek() == '\n':
@@ -51,6 +56,22 @@ class Scanner:
             self.advance()
             value = self._text[self._start + 1 : self._current - 1]
             self.addToken(TokenType.STRING, value)
+
+        def isDigit(c: str) -> bool:
+            return '0' < c < '9'
+
+        def number() -> None:
+            while isDigit(peek()):
+                self.advance()
+
+            if peek() == '.' and isDigit(peekNext()):
+                self.advance()
+
+            while isDigit(peek()):
+                self.advance()
+
+            value = float(self._text[self._start : self._current])
+            self.addToken(TokenType.NUMBER, value)
 
         c = self.advance()
         if c == '(':
@@ -106,6 +127,8 @@ class Scanner:
             self._line += 1
         elif c == '"':
             string()
+        elif isDigit(c):
+            number()
         else:
             self._error_reporter.error(
                 line=self._line,
