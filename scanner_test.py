@@ -130,6 +130,30 @@ class ScannerTest(unittest.TestCase):
         actual = scanner.tokens()
         self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
 
+    def test_scan_operators_whitespace_comments(self):
+        text = '// this is a comment\n(( )){} //grouping stuff\n!*+-/=<> <= == // operators'
+        expected = [
+            Token(TokenType.LEFT_PAREN, '(', None, 2),
+            Token(TokenType.LEFT_PAREN, '(', None, 2),
+            Token(TokenType.RIGHT_PAREN, ')', None, 2),
+            Token(TokenType.RIGHT_PAREN, ')', None, 2),
+            Token(TokenType.LEFT_BRACE, '{', None, 2),
+            Token(TokenType.RIGHT_BRACE, '}', None, 2),
+            Token(TokenType.BANG, '!', None, 3),
+            Token(TokenType.STAR, '*', None, 3),
+            Token(TokenType.PLUS, '+', None, 3),
+            Token(TokenType.MINUS, '-', None, 3),
+            Token(TokenType.SLASH, '/', None, 3),
+            Token(TokenType.EQUAL, '=', None, 3),
+            Token(TokenType.LESS, '<', None, 3),
+            Token(TokenType.GREATER, '>', None, 3),
+            Token(TokenType.LESS_EQUAL, '<=', None, 3),
+            Token(TokenType.EQUAL_EQUAL, '==', None, 3),
+        ]
+        scanner = Scanner(text)
+        actual = scanner.tokens()
+        self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
+
     def test_scan_unexpected_character(self):
         error_reporter = TestErrorReporter()
         scanner = Scanner(text='^', error_reporter=error_reporter)
