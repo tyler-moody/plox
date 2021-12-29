@@ -173,8 +173,59 @@ class ScannerTest(unittest.TestCase):
         ]
         scanner = Scanner(text)
         actual = scanner.tokens()
-        for t in actual:
-            print(t)
+        self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
+
+    def test_scan_identifier(self):
+        text = 'orchid with_underscore withCaps withNumber0'
+        expected = [
+            Token(TokenType.IDENTIFIER, 'orchid', 'orchid', 1),
+            Token(TokenType.IDENTIFIER, 'with_underscore', 'with_underscore', 1),
+            Token(TokenType.IDENTIFIER, 'withCaps', 'withCaps', 1),
+            Token(TokenType.IDENTIFIER, 'withNumber0', 'withNumber0', 1),
+            Token(TokenType.EOF, '', None, 1),
+        ]
+        scanner = Scanner(text)
+        actual = scanner.tokens()
+        self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
+
+    def test_scan_reserved_words(self):
+        text = 'and class else false for fun if nil or print return super this true var while'
+        expected = [
+            Token(TokenType.AND, 'and', 'and', 1),
+            Token(TokenType.CLASS, 'class', 'class', 1),
+            Token(TokenType.ELSE, 'else', 'else', 1),
+            Token(TokenType.FALSE, 'false', 'false', 1),
+            Token(TokenType.FOR, 'for', 'for', 1),
+            Token(TokenType.FUN, 'fun', 'fun', 1),
+            Token(TokenType.IF, 'if', 'if', 1),
+            Token(TokenType.NIL, 'nil', 'nil', 1),
+            Token(TokenType.OR, 'or', 'or', 1),
+            Token(TokenType.PRINT, 'print', 'print', 1),
+            Token(TokenType.RETURN, 'return', 'return', 1),
+            Token(TokenType.SUPER, 'super', 'super', 1),
+            Token(TokenType.THIS, 'this', 'this', 1),
+            Token(TokenType.TRUE, 'true', 'true', 1),
+            Token(TokenType.VAR, 'var', 'var', 1),
+            Token(TokenType.WHILE, 'while', 'while', 1),
+        ]
+        scanner = Scanner(text)
+        actual = scanner.tokens()
+        self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
+
+    def test_scan_reserved_words_and_identifiers(self):
+        text = 'and andalite class classy else else0 false false_or_true'
+        expected = [
+            Token(TokenType.AND, 'and', 'and', 1),
+            Token(TokenType.IDENTIFIER, 'andalite', 'andalite', 1),
+            Token(TokenType.CLASS, 'class', 'class', 1),
+            Token(TokenType.IDENTIFIER, 'classy', 'classy', 1),
+            Token(TokenType.ELSE, 'else', 'else', 1),
+            Token(TokenType.IDENTIFIER, 'else0', 'else0', 1),
+            Token(TokenType.FALSE, 'false', 'false', 1),
+            Token(TokenType.IDENTIFIER, 'false_or_true', 'false_or_true', 1),
+        ]
+        scanner = Scanner(text)
+        actual = scanner.tokens()
         self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
 
     def test_scan_unexpected_character(self):

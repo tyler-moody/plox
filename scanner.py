@@ -3,6 +3,25 @@ from tok import Token, TokenType
 from error import ErrorReporter, StdoutErrorReporter
 from typing import List, Optional
 
+RESERVED_WORDS = {
+    'and': TokenType.AND,
+    'class': TokenType.CLASS,
+    'else': TokenType.ELSE,
+    'false': TokenType.FALSE,
+    'for': TokenType.FOR,
+    'fun': TokenType.FUN,
+    'if': TokenType.IF,
+    'nil': TokenType.NIL,
+    'or': TokenType.OR,
+    'print': TokenType.PRINT,
+    'return': TokenType.RETURN,
+    'super': TokenType.SUPER,
+    'this': TokenType.THIS,
+    'true': TokenType.TRUE,
+    'var': TokenType.VAR,
+    'while': TokenType.WHILE,
+}
+
 
 class Scanner:
     def __init__(
@@ -58,7 +77,7 @@ class Scanner:
             self.addToken(TokenType.STRING, value)
 
         def isDigit(c: str) -> bool:
-            return '0' < c < '9'
+            return '0' <= c <= '9'
 
         def number() -> None:
             while isDigit(peek()):
@@ -72,6 +91,19 @@ class Scanner:
 
             value = float(self._text[self._start : self._current])
             self.addToken(TokenType.NUMBER, value)
+
+        def isAlpha(c: str) -> bool:
+            return 'a' <= c <= 'z' or 'A' <= c <= 'Z'
+
+        def isIdentifierCharacter(c: str) -> bool:
+            return isDigit(c) or isAlpha(c) or c in ['_']
+
+        def identifier() -> None:
+            while isIdentifierCharacter(peek()):
+                self.advance()
+            text = self._text[self._start : self._current]
+            token_type = RESERVED_WORDS.get(text, TokenType.IDENTIFIER)
+            self.addToken(token_type, text)
 
         c = self.advance()
         if c == '(':
@@ -129,6 +161,8 @@ class Scanner:
             string()
         elif isDigit(c):
             number()
+        elif isAlpha(c):
+            identifier()
         else:
             self._error_reporter.error(
                 line=self._line,
