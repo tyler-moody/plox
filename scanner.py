@@ -23,6 +23,35 @@ class Scanner:
         return self._tokens
 
     def scanToken(self) -> None:
+        def match(expected: str) -> bool:
+            if self.isAtEnd():
+                return False
+            elif self._text[self._current] != expected:
+                return False
+            self._current += 1
+            return True
+
+        def peek() -> str:
+            if self.isAtEnd():
+                return '\0'
+            return self._text[self._current]
+
+        def string() -> None:
+            while peek() != '"' and not self.isAtEnd():
+                if peek() == '\n':
+                    self._line += 1
+                self.advance()
+
+            if self.isAtEnd():
+                self._error_reporter.error(
+                    line=self._line, message='Unterminatted string'
+                )
+
+            # skip past the closing "
+            self.advance()
+            value = self._text[self._start + 1 : self._current - 1]
+            self.addToken(TokenType.STRING, value)
+
         c = self.advance()
         if c == '(':
             self.addToken(TokenType.LEFT_PAREN)
@@ -45,29 +74,29 @@ class Scanner:
         elif c == '*':
             self.addToken(TokenType.STAR)
         elif c == '!':
-            if self.match('='):
+            if match('='):
                 self.addToken(TokenType.BANG_EQUAL)
             else:
                 self.addToken(TokenType.BANG)
         elif c == '=':
-            if self.match('='):
+            if match('='):
                 self.addToken(TokenType.EQUAL_EQUAL)
             else:
                 self.addToken(TokenType.EQUAL)
         elif c == '<':
-            if self.match('='):
+            if match('='):
                 self.addToken(TokenType.LESS_EQUAL)
             else:
                 self.addToken(TokenType.LESS)
         elif c == '>':
-            if self.match('='):
+            if match('='):
                 self.addToken(TokenType.GREATER_EQUAL)
             else:
                 self.addToken(TokenType.GREATER)
         elif c == '/':
-            if self.match('/'):
+            if match('/'):
                 # a comment to end of line
-                while not self.isAtEnd() and self.peek() != '\n':
+                while not self.isAtEnd() and peek() != '\n':
                     self.advance()
             else:
                 self.addToken(TokenType.SLASH)
@@ -76,39 +105,12 @@ class Scanner:
         elif c == '\n':
             self._line += 1
         elif c == '"':
-            self.string()
+            string()
         else:
             self._error_reporter.error(
                 line=self._line,
                 message=f'Unexpected character "{c}"',
             )
-
-    def string(self) -> None:
-        while self.peek() != '"' and not self.isAtEnd():
-            if self.peek() == '\n':
-                self._line += 1
-            self.advance()
-
-        if self.isAtEnd():
-            self._error_reporter.error(line=self._line, message='Unterminatted string')
-
-        # skip past the closing "
-        self.advance()
-        value = self._text[self._start + 1 : self._current - 1]
-        self.addToken(TokenType.STRING, value)
-
-    def peek(self) -> str:
-        if self.isAtEnd():
-            return '\0'
-        return self._text[self._current]
-
-    def match(self, expected: str) -> bool:
-        if self.isAtEnd():
-            return False
-        elif self._text[self._current] != expected:
-            return False
-        self._current += 1
-        return True
 
     def advance(self) -> Optional[str]:
         if self._current < len(self._text):
