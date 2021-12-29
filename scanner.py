@@ -44,11 +44,50 @@ class Scanner:
             self.addToken(TokenType.SEMICOLON)
         elif c == '*':
             self.addToken(TokenType.STAR)
+        elif c == '!':
+            if self.match('='):
+                self.addToken(TokenType.BANG_EQUAL)
+            else:
+                self.addToken(TokenType.BANG)
+        elif c == '=':
+            if self.match('='):
+                self.addToken(TokenType.EQUAL_EQUAL)
+            else:
+                self.addToken(TokenType.EQUAL)
+        elif c == '<':
+            if self.match('='):
+                self.addToken(TokenType.LESS_EQUAL)
+            else:
+                self.addToken(TokenType.LESS)
+        elif c == '>':
+            if self.match('='):
+                self.addToken(TokenType.GREATER_EQUAL)
+            else:
+                self.addToken(TokenType.GREATER)
+        elif c == '/':
+            if self.match('/'):
+                # a comment to end of line
+                while not self.isAtEnd() and self._text[self._current] != '\n':
+                    self.advance()
+            else:
+                self.addToken(TokenType.SLASH)
+        elif c in [' ', '\r', '\t']:
+            pass
+        elif c == '\n':
+            self._line += 1
         else:
             self._error_reporter.error(
                 line=self._line,
                 message=f'Unexpected character "{c}"',
             )
+
+    def match(self, expected: str) -> bool:
+        if self.isAtEnd():
+            return False
+        elif self._text[self._current] != expected:
+            return False
+        self._current += 1
+        return True
 
     def advance(self) -> Optional[str]:
         if self._current < len(self._text):

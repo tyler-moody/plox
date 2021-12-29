@@ -62,10 +62,78 @@ class ScannerTest(unittest.TestCase):
 
         self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
 
+    def test_scan_bang_operators(self):
+        text = '!=!'
+        expected = [
+            Token(TokenType.BANG_EQUAL, '!=', None, 1),
+            Token(TokenType.BANG, '!', None, 1),
+        ]
+        scanner = Scanner(text)
+        actual = scanner.tokens()
+        self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
+
+    def test_scan_equal_operators(self):
+        text = '==='
+        expected = [
+            Token(TokenType.EQUAL_EQUAL, '==', None, 1),
+            Token(TokenType.EQUAL, '=', None, 1),
+        ]
+        scanner = Scanner(text)
+        actual = scanner.tokens()
+        self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
+
+    def test_scan_lt_operators(self):
+        text = '<<='
+        expected = [
+            Token(TokenType.LESS, '<', None, 1),
+            Token(TokenType.LESS_EQUAL, '<=', None, 1),
+        ]
+        scanner = Scanner(text)
+        actual = scanner.tokens()
+        self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
+
+    def test_scan_gt_operators(self):
+        text = '>>='
+        expected = [
+            Token(TokenType.GREATER, '>', None, 1),
+            Token(TokenType.GREATER_EQUAL, '>=', None, 1),
+        ]
+        scanner = Scanner(text)
+        actual = scanner.tokens()
+        self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
+
+    def test_scan_slash(self):
+        text = '/'
+        expected = [Token(TokenType.SLASH, '/', None, 1)]
+        scanner = Scanner(text)
+        actual = scanner.tokens()
+        self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
+
+    def test_scan_comment(self):
+        text = '///'
+        expected = [Token(TokenType.EOF, '', None, 1)]
+        scanner = Scanner(text)
+        actual = scanner.tokens()
+        self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
+
+    def test_scan_whitespace(self):
+        text = ' \r\t'
+        expected = [Token(TokenType.EOF, '', None, 1)]
+        scanner = Scanner(text)
+        actual = scanner.tokens()
+        self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
+
+    def test_scan_newline(self):
+        text = '\n'
+        expected = [Token(TokenType.EOF, '', None, 2)]
+        scanner = Scanner(text)
+        actual = scanner.tokens()
+        self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
+
     def test_scan_unexpected_character(self):
         error_reporter = TestErrorReporter()
-        scanner = Scanner(text='/', error_reporter=error_reporter)
+        scanner = Scanner(text='^', error_reporter=error_reporter)
         scanner.tokens()
-        expected = [(1, '', 'Unexpected character "/"')]
+        expected = [(1, '', 'Unexpected character "^"')]
         actual = error_reporter.errors()
         self.assertTrue(expected == actual)
