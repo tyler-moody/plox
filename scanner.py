@@ -67,7 +67,7 @@ class Scanner:
         elif c == '/':
             if self.match('/'):
                 # a comment to end of line
-                while not self.isAtEnd() and self._text[self._current] != '\n':
+                while not self.isAtEnd() and self.peek() != '\n':
                     self.advance()
             else:
                 self.addToken(TokenType.SLASH)
@@ -75,11 +75,32 @@ class Scanner:
             pass
         elif c == '\n':
             self._line += 1
+        elif c == '"':
+            self.string()
         else:
             self._error_reporter.error(
                 line=self._line,
                 message=f'Unexpected character "{c}"',
             )
+
+    def string(self) -> None:
+        while self.peek() != '"' and not self.isAtEnd():
+            if self.peek() == '\n':
+                self._line += 1
+            self.advance()
+
+        if self.isAtEnd():
+            self._error_reporter.error(line=self._line, message='Unterminatted string')
+
+        # skip past the closing "
+        self.advance()
+        value = self._text[self._start + 1 : self._current - 1]
+        self.addToken(TokenType.STRING, value)
+
+    def peek(self) -> str:
+        if self.isAtEnd():
+            return '\0'
+        return self._text[self._current]
 
     def match(self, expected: str) -> bool:
         if self.isAtEnd():
