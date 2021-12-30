@@ -1,0 +1,29 @@
+Precedence Rules (lowest to highest)
+
+Name            Operators       Associates
+Equality        == !=           Left                
+Comparison      > >= < <=       Left
+Additive        - +             Left
+Multiplicative  / *             Left
+Unary           ! -             Right
+
+--------------------------------------------------------------------------------
+Syntactic Grammar
+
+Each rule in the grammar matches expressions at its precedence or higher
+
+expression ->           equality ;
+
+equality ->             comparison (("==" | "!=") comparison)* ;
+
+comparison ->           additive ((">" | ">=" | "<" | "<=") additive)* ;
+
+additive ->             multiplicative (("+" | "-") multiplicative)* ;
+
+multiplicative ->       unary (("/" | "*") unary)* ;
+
+unary ->                ("-" | "!") unary 
+                        | primary ;
+
+primary ->              NUMBER | STRING | "true" | "false" | "nil" 
+                        | "(" expression ")" ;
