@@ -1,6 +1,7 @@
 import unittest
 
-from expression import Binary, Grouping, Literal, Printer, Unary
+from expression import Binary, Grouping, Literal, Unary
+from printer import Printer
 from tok import Token, TokenType
 
 
