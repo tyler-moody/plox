@@ -50,21 +50,21 @@ class TokenType(enum.Enum):
 
 class Token:
     def __init__(self, token_type: TokenType, lexeme: str, literal: object, line: int):
-        self._type = token_type
-        self._lexeme = lexeme
-        self._literal = literal
-        self._line = line
+        self.token_type = token_type
+        self.lexeme = lexeme
+        self.literal = literal
+        self.line = line
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, Token):
             return False
         return (
             self.__class__ == other.__class__
-            and self._type == other._type
-            and self._lexeme == other._lexeme
-            and self._literal == other._literal
-            and self._line == other._line
+            and self.token_type == other.token_type
+            and self.lexeme == other.lexeme
+            and self.literal == other.literal
+            and self.line == other.line
         )
 
     def __str__(self) -> str:
-        return f'{self.__class__.__name__}(type={self._type}, lexeme="{self._lexeme}", literal={self._literal}, line={self._line})'
+        return f'{self.__class__.__name__}(type={self.token_type}, lexeme="{self.lexeme}", literal={self.literal}, line={self.line})'

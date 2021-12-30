@@ -88,10 +88,10 @@ class Printer:
         return expression.accept(self)
 
     def visit_unary(self, unary: Unary):
-        return self._parenthesize(unary.operator._lexeme, [unary.expression])
+        return self._parenthesize(unary.operator.lexeme, [unary.expression])
 
     def visit_binary(self, binary: Binary):
-        return self._parenthesize(binary.operator._lexeme, [binary.left, binary.right])
+        return self._parenthesize(binary.operator.lexeme, [binary.left, binary.right])
 
     def visit_grouping(self, grouping: Grouping):
         return self._parenthesize('group', [grouping.expression])
