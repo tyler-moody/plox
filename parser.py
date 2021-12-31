@@ -1,5 +1,6 @@
 from typing import Optional, Sequence
 
+from error import ErrorReporter, StdoutErrorReporter
 from expression import Binary, Expression, Grouping, Literal, Unary
 from tok import Token, TokenType
 
@@ -9,12 +10,20 @@ class ParseError(Exception):
 
 
 class Parser:
-    def __init__(self, tokens: Sequence[Token]):
+    def __init__(
+        self,
+        tokens: Sequence[Token],
+        error_reporter: ErrorReporter = StdoutErrorReporter(),
+    ):
         self._tokens = tokens
         self._current = 0
+        self._error_reporter = error_reporter
 
-    def parse(self) -> Expression:
-        return self._expression()
+    def parse(self) -> Optional[Expression]:
+        try:
+            return self._expression()
+        except ParseError as e:
+            return None
 
     #      _        _                         _
     #  ___| |_ __ _| |_ ___    __ _ _ __   __| |
@@ -40,7 +49,8 @@ class Parser:
 
     def _peek(self) -> Token:
         if self._current == 0 and len(self._tokens) == 0:
-            raise ParseError('No tokens to parse')
+            artificialToken = Token(TokenType.NIL, 'nil', None, -1)
+            raise self._error(artificialToken, 'No tokens to parse')
         return self._tokens[self._current]
 
     def _previous(self) -> Token:
@@ -57,7 +67,7 @@ class Parser:
     #  FIGLET: error handling
     #
     def _error(self, token: Token, message: str) -> ParseError:
-        # TODO use an error reporter implementation
+        self._error_reporter.error(line=token.line, message=message)
         m = f'{token} {message}'
         return ParseError(m)
 
@@ -178,7 +188,7 @@ class Parser:
             return Literal(value=self._previous().literal)
         elif self._match([TokenType.LEFT_PAREN]):
             expression = self._expression()
-            self._consume(TokenType.RIGHT_PAREN, "Expected ')' after '('.")
+            self._consume(TokenType.RIGHT_PAREN, "Expected ')' after '('")
             return Grouping(expression=expression)
 
         raise self._error(self._peek(), 'Expected expression')
