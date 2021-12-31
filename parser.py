@@ -192,29 +192,3 @@ class Parser:
             return Grouping(expression=expression)
 
         raise self._error(self._peek(), 'Expected expression')
-
-    #  _____                              _
-    # | ____|_  ___ __  _ __ ___  ___ ___(_) ___  _ __
-    # |  _| \ \/ / '_ \| '__/ _ \/ __/ __| |/ _ \| '_ \
-    # | |___ >  <| |_) | | |  __/\__ \__ \ | (_) | | | |
-    # |_____/_/\_\ .__/|_|  \___||___/___/_|\___/|_| |_|
-    #            |_|
-    # __     ___     _ _
-    # \ \   / (_)___(_) |_ ___  _ __
-    #  \ \ / /| / __| | __/ _ \| '__|
-    #   \ V / | \__ \ | || (_) | |
-    #    \_/  |_|___/_|\__\___/|_|
-    #  FIGLET: Expression Visitor
-    #
-
-    def visit_unary(self, unary: Unary):
-        pass
-
-    def visit_binary(self, binary: Binary):
-        pass
-
-    def visit_grouping(self, grouping: Grouping):
-        pass
-
-    def visit_literal(self, literal: Literal):
-        pass
