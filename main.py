@@ -2,6 +2,8 @@
 
 import argparse
 
+from parser import Parser
+from printer import Printer
 from scanner import Scanner
 
 #  __  __       _
@@ -16,8 +18,11 @@ from scanner import Scanner
 def run(text: str) -> None:
     scanner = Scanner(text)
     tokens = scanner.tokens()
-    for token in tokens:
-        print(token)
+    parser = Parser(tokens)
+    expression = parser.parse()
+    if expression:
+        printer = Printer()
+        print(printer.print(expression))
 
 
 def run_prompt() -> None:
