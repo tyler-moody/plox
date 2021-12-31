@@ -1,13 +1,11 @@
 from typing import List, Tuple
 
-from error import ErrorReporter
 
-
-class TestErrorReporter(ErrorReporter):
+class TestErrorReporter:
     def __init__(self):
         self._errors = []
 
-    def report(self, line: int, where: int, message: str) -> None:
+    def report(self, line: int, where: str, message: str) -> None:
         self._errors.append((line, where, message))
 
     def error(self, line: int, message: str) -> None:

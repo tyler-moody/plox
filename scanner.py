@@ -34,7 +34,7 @@ class Scanner:
         self._line = 1
         self._error_reporter = error_reporter
 
-    def tokens(self) -> List[str]:
+    def tokens(self) -> List[Token]:
         while not self.isAtEnd():
             self._start = self._current
             self.scanToken()
@@ -106,6 +106,7 @@ class Scanner:
             self.addToken(token_type, text)
 
         c = self.advance()
+        assert c is not None
         if c == '(':
             self.addToken(TokenType.LEFT_PAREN)
         elif c == ')':

@@ -92,17 +92,18 @@ class Parser:
                 return True
         return False
 
-    def _consume(self, token_type: TokenType, message: str) -> Token:
+    def _consume(self, token_type: TokenType, message: str) -> None:
         if self._check(token_type):
-            return self._advance()
+            self._advance()
+            return
         raise self._error(self._peek(), message)
 
     def _synchronize(self) -> None:
         self._advance()
         while not self._isAtEnd():
-            if self._previous().type == TokenType.SEMICOLON:
+            if self._previous().token_type == TokenType.SEMICOLON:
                 return
-            if self._peek().type in [
+            if self._peek().token_type in [
                 TokenType.CLASS,
                 TokenType.FOR,
                 TokenType.FUN,
