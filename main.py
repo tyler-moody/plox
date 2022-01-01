@@ -2,6 +2,7 @@
 
 import argparse
 
+from interpreter import Interpreter, InterpretError
 from parser import Parser
 from printer import Printer
 from scanner import Scanner
@@ -23,21 +24,33 @@ def run(text: str) -> None:
     if expression:
         printer = Printer()
         print(printer.print(expression))
+        interpreter = Interpreter()
+        print(interpreter.evaluate(expression))
 
 
 def run_prompt() -> None:
+    # TODO: the prompt should report scanning and parsing errors, not swallow/ignore them
+
+    # TODO: the prompt should have a long-lived interpreter to retain state
     while True:
         print('> ', end='')
         command = input()
         if command == '':
             break
-        run(command)
+        try:
+            run(command)
+        except InterpretError as e:
+            pass
 
 
 def run_file(filename: str) -> None:
+    # TODO: running a file with syntax errors should report all errors
     with open(filename) as f:
         text = f.read()
-        run(text)
+        try:
+            run(text)
+        except InterpretError as e:
+            exit(70)
 
 
 def parse_args() -> argparse.Namespace:

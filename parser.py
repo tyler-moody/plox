@@ -185,7 +185,9 @@ class Parser:
             return Literal(value=True)
         elif self._match([TokenType.NIL]):
             return Literal(value=None)
-        elif self._match([TokenType.NUMBER, TokenType.STRING]):
+        elif self._match([TokenType.NUMBER]):
+            return Literal(value=float(self._previous().literal))
+        elif self._match([TokenType.STRING]):
             return Literal(value=self._previous().literal)
         elif self._match([TokenType.LEFT_PAREN]):
             expression = self._expression()

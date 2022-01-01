@@ -1,7 +1,10 @@
 from dataclasses import dataclass
+from typing import Union
 from typing_extensions import Protocol
 
 from tok import Token
+
+Value = Union[bool, None, float, str]
 
 
 class Expression(Protocol):
@@ -38,7 +41,7 @@ class Grouping(Expression):
 
 @dataclass
 class Literal(Expression):
-    value: object
+    value: Value
 
     def accept(self, visitor):
         return visitor.visit_literal(self)
