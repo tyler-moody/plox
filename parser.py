@@ -1,6 +1,5 @@
 from typing import Optional, Sequence
 
-from error import ErrorReporter, StdoutErrorReporter
 from expression import Binary, Expression, Grouping, Literal, Unary
 from tok import Token, TokenType
 
@@ -13,17 +12,12 @@ class Parser:
     def __init__(
         self,
         tokens: Sequence[Token],
-        error_reporter: ErrorReporter = StdoutErrorReporter(),
     ):
         self._tokens = tokens
         self._current = 0
-        self._error_reporter = error_reporter
 
     def parse(self) -> Optional[Expression]:
-        try:
-            return self._expression()
-        except ParseError as e:
-            return None
+        return self._expression()
 
     #      _        _                         _
     #  ___| |_ __ _| |_ ___    __ _ _ __   __| |
@@ -67,8 +61,7 @@ class Parser:
     #  FIGLET: error handling
     #
     def _error(self, token: Token, message: str) -> ParseError:
-        self._error_reporter.error(line=token.line, message=message)
-        m = f'{token} {message}'
+        m = f'{token.line} {message}'
         return ParseError(m)
 
     #                       _               _          _
@@ -191,7 +184,7 @@ class Parser:
             return Literal(value=self._previous().literal)
         elif self._match([TokenType.LEFT_PAREN]):
             expression = self._expression()
-            self._consume(TokenType.RIGHT_PAREN, "Expected ')' after '('")
+            self._consume(TokenType.RIGHT_PAREN, 'Expected ")" after "("')
             return Grouping(expression=expression)
 
         raise self._error(self._peek(), 'Expected expression')

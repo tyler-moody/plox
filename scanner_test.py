@@ -1,7 +1,6 @@
 import unittest
 
-from scanner import Scanner
-from test_error_reporter import TestErrorReporter
+from scanner import Scanner, ScanError
 from tok import Token, TokenType
 
 
@@ -148,6 +147,10 @@ class ScannerTest(unittest.TestCase):
         actual = scanner.tokens()
         self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
 
+    def test_scan_unterminated_string(self):
+        with self.assertRaisesRegex(ScanError, 'Unterminated string'):
+            Scanner('"literal').tokens()
+
     def test_scan_number_literal(self):
         text = '5 5.5'
         expected = [
@@ -213,9 +216,5 @@ class ScannerTest(unittest.TestCase):
         self.assertTrue(all(map(lambda x, y: x == y, expected, actual)))
 
     def test_scan_unexpected_character(self):
-        error_reporter = TestErrorReporter()
-        scanner = Scanner(text='^', error_reporter=error_reporter)
-        scanner.tokens()
-        expected = [(1, '', 'Unexpected character "^"')]
-        actual = error_reporter.errors()
-        self.assertTrue(expected == actual)
+        with self.assertRaisesRegex(ScanError, 'Unexpected character "\^"'):
+            scanner = Scanner(text='^').tokens()

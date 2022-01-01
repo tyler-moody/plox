@@ -1,6 +1,5 @@
 from typing import Union
 
-from error import ErrorReporter, StdoutErrorReporter
 from expression import Binary, Expression, Grouping, Literal, Unary, Value
 from tok import Token, TokenType
 
@@ -15,14 +14,10 @@ class InterpretError(Exception):
 
 
 class Interpreter:
-    def __init__(self, error_reporter: ErrorReporter = StdoutErrorReporter()):
-        self._error_reporter = error_reporter
-
     def evaluate(self, expression: Expression) -> Value:
         return expression.accept(self)
 
     def _error(self, line: int, message: str) -> InterpretError:
-        self._error_reporter.error(line=line, message=message)
         m = f'line {line} {message}'
         return InterpretError(m)
 

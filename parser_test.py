@@ -2,26 +2,18 @@ import unittest
 
 from expression import Binary, Grouping, Literal, Unary
 from parser import Parser, ParseError
-from test_error_reporter import TestErrorReporter
 from tok import Token, TokenType
 
 
 class ParserTest(unittest.TestCase):
     def test_parse_nothing(self):
-        error_reporter = TestErrorReporter()
-        parser = Parser([], error_reporter=error_reporter)
-        self.assertEqual(None, parser.parse())
-        expected = [(-1, '', 'No tokens to parse')]
-        self.assertEqual(expected, error_reporter.errors())
+        with self.assertRaisesRegex(ParseError, 'No tokens to parse'):
+            Parser([]).parse()
 
     def test_parse_eof(self):
-        error_reporter = TestErrorReporter()
-        parser = Parser(
-            [Token(TokenType.EOF, '', None, 1)], error_reporter=error_reporter
-        )
-        self.assertEqual(None, parser.parse())
-        expected = [(1, '', 'Expected expression')]
-        self.assertEqual(expected, error_reporter.errors())
+        with self.assertRaisesRegex(ParseError, 'Expected expression'):
+            Parser([Token(TokenType.EOF, '', None, 1)]).parse()
+            parser.parse()
 
     #             _
     #  _ __  _ __(_)_ __ ___   __ _ _ __ _   _
@@ -83,17 +75,15 @@ class ParserTest(unittest.TestCase):
         self.assertEqual(expected, Parser(tokens).parse())
 
     def test_parse_unmatched_left_paren(self):
-        error_reporter = TestErrorReporter()
-        tokens = [
-            Token(TokenType.LEFT_PAREN, '(', None, 1),
-            Token(TokenType.NUMBER, '45.67', 45.67, 1),
-            # missing close paren
-            Token(TokenType.EOF, '', None, 1),
-        ]
-        parser = Parser(tokens=tokens, error_reporter=error_reporter)
-        self.assertEqual(None, parser.parse())
-        expected = [(1, '', "Expected ')' after '('")]
-        self.assertEqual(expected, error_reporter.errors())
+        with self.assertRaisesRegex(ParseError, 'Expected "\)" after "\("'):
+            Parser(
+                tokens=[
+                    Token(TokenType.LEFT_PAREN, '(', None, 1),
+                    Token(TokenType.NUMBER, '45.67', 45.67, 1),
+                    # missing close paren
+                    Token(TokenType.EOF, '', None, 1),
+                ]
+            ).parse()
 
     #  _   _ _ __   __ _ _ __ _   _
     # | | | | '_ \ / _` | '__| | | |

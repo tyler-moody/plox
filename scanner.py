@@ -1,6 +1,5 @@
 from tok import Token, TokenType
 
-from error import ErrorReporter, StdoutErrorReporter
 from typing import List, Optional
 
 RESERVED_WORDS = {
@@ -23,25 +22,29 @@ RESERVED_WORDS = {
 }
 
 
+class ScanError(Exception):
+    pass
+
+
 class Scanner:
-    def __init__(
-        self, text: str, error_reporter: ErrorReporter = StdoutErrorReporter()
-    ):
+    def __init__(self, text: str):
         self._text = text
         self._tokens: List[Token] = []
         self._start = 0
         self._current = 0
         self._line = 1
-        self._error_reporter = error_reporter
 
     def tokens(self) -> List[Token]:
         while not self.isAtEnd():
             self._start = self._current
-            self.scanToken()
+            self._scanToken()
         self._tokens.append(Token(TokenType.EOF, '', None, self._line))
         return self._tokens
 
-    def scanToken(self) -> None:
+    def _error(self, message: str) -> ScanError:
+        return ScanError(f'{self._line} {message}')
+
+    def _scanToken(self) -> None:
         def match(expected: str) -> bool:
             if self.isAtEnd():
                 return False
@@ -67,9 +70,7 @@ class Scanner:
                 self.advance()
 
             if self.isAtEnd():
-                self._error_reporter.error(
-                    line=self._line, message='Unterminatted string'
-                )
+                raise self._error('Unterminated string')
 
             # skip past the closing "
             self.advance()
@@ -165,10 +166,7 @@ class Scanner:
         elif isAlpha(c):
             identifier()
         else:
-            self._error_reporter.error(
-                line=self._line,
-                message=f'Unexpected character "{c}"',
-            )
+            raise self._error(f'Unexpected character "{c}"')
 
     def advance(self) -> Optional[str]:
         if self._current < len(self._text):

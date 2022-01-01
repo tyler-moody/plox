@@ -4,25 +4,20 @@ from typing import Any
 
 from expression import Binary, Grouping, Literal, Unary
 from interpreter import InterpretError, Interpreter
-from test_error_reporter import TestErrorReporter
 from tok import Token, TokenType
 
 
 class InterpreterTest(unittest.TestCase):
-    def setUp(self):
-        self.error_reporter = TestErrorReporter()
-        self.interpreter = Interpreter(error_reporter=self.error_reporter)
-
     def test_evaluate_literals(self):
-        self.assertEqual(False, self.interpreter.evaluate(Literal(value=False)))
-        self.assertEqual(True, self.interpreter.evaluate(Literal(value=True)))
-        self.assertEqual(None, self.interpreter.evaluate(Literal(value=None)))
-        self.assertEqual(5, self.interpreter.evaluate(Literal(value=5)))
-        self.assertEqual('string', self.interpreter.evaluate(Literal(value='string')))
+        self.assertEqual(False, Interpreter().evaluate(Literal(value=False)))
+        self.assertEqual(True, Interpreter().evaluate(Literal(value=True)))
+        self.assertEqual(None, Interpreter().evaluate(Literal(value=None)))
+        self.assertEqual(5, Interpreter().evaluate(Literal(value=5)))
+        self.assertEqual('string', Interpreter().evaluate(Literal(value='string')))
 
     def test_evaluate_grouping(self):
         self.assertEqual(
-            5, self.interpreter.evaluate(Grouping(expression=Literal(value=5)))
+            5, Interpreter().evaluate(Grouping(expression=Literal(value=5)))
         )
 
     #  _   _ _ __   __ _ _ __ _   _
@@ -36,7 +31,7 @@ class InterpreterTest(unittest.TestCase):
     def test_evaluate_unary(self):
         self.assertEqual(
             -5,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Unary(
                     operator=Token(TokenType.MINUS, '-', None, 1),
                     expression=Literal(value=5.0),
@@ -46,7 +41,7 @@ class InterpreterTest(unittest.TestCase):
 
         self.assertEqual(
             False,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Unary(
                     operator=Token(TokenType.BANG, '!', None, 1),
                     expression=Literal(value=True),
@@ -56,7 +51,7 @@ class InterpreterTest(unittest.TestCase):
 
     def test_evaluate_illegal_unary_op(self):
         with self.assertRaisesRegex(InterpretError, 'Illegal unary operator'):
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Unary(
                     operator=Token(TokenType.PLUS, '+', None, 1),
                     expression=Literal(value=False),
@@ -74,7 +69,7 @@ class InterpreterTest(unittest.TestCase):
     def test_evaluate_false_is_false(self):
         self.assertEqual(
             True,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Unary(
                     operator=Token(TokenType.BANG, '!', None, 1),
                     expression=Literal(value=False),
@@ -85,7 +80,7 @@ class InterpreterTest(unittest.TestCase):
     def test_evaluate_none_is_false(self):
         self.assertEqual(
             True,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Unary(
                     operator=Token(TokenType.BANG, '!', None, 1),
                     expression=Literal(value=None),
@@ -96,7 +91,7 @@ class InterpreterTest(unittest.TestCase):
     def test_evaluate_string_is_true(self):
         self.assertEqual(
             False,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Unary(
                     operator=Token(TokenType.BANG, '!', None, 1),
                     expression=Literal(value='foo'),
@@ -106,7 +101,7 @@ class InterpreterTest(unittest.TestCase):
         # empty strings are true too
         self.assertEqual(
             False,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Unary(
                     operator=Token(TokenType.BANG, '!', None, 1),
                     expression=Literal(value=''),
@@ -117,7 +112,7 @@ class InterpreterTest(unittest.TestCase):
     def test_evaluate_zero_is_false(self):
         self.assertEqual(
             True,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Unary(
                     operator=Token(TokenType.BANG, '!', None, 1),
                     expression=Literal(value=0),
@@ -128,7 +123,7 @@ class InterpreterTest(unittest.TestCase):
     def test_evaluate_nonzero_number_is_true(self):
         self.assertEqual(
             False,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Unary(
                     operator=Token(TokenType.BANG, '!', None, 1),
                     expression=Literal(value=5),
@@ -149,7 +144,7 @@ class InterpreterTest(unittest.TestCase):
         with self.assertRaisesRegex(
             InterpretError, 'both operands must be float or str'
         ):
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Literal(value=5),
                     operator=Token(TokenType.PLUS, '+', None, 1),
@@ -160,7 +155,7 @@ class InterpreterTest(unittest.TestCase):
     def test_evaluate_binary_plus(self):
         self.assertEqual(
             5,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Literal(value=2),
                     operator=Token(TokenType.PLUS, '+', None, 1),
@@ -172,7 +167,7 @@ class InterpreterTest(unittest.TestCase):
     def test_evaluate_binary_minus(self):
         self.assertEqual(
             5,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Literal(value=7),
                     operator=Token(TokenType.MINUS, '-', None, 1),
@@ -184,7 +179,7 @@ class InterpreterTest(unittest.TestCase):
     def test_evaluate_binary_multiply(self):
         self.assertEqual(
             35,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Literal(value=7),
                     operator=Token(TokenType.STAR, '*', None, 1),
@@ -196,7 +191,7 @@ class InterpreterTest(unittest.TestCase):
     def test_evaluate_binary_divide(self):
         self.assertEqual(
             5,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Literal(value=35),
                     operator=Token(TokenType.SLASH, '/', None, 1),
@@ -207,7 +202,7 @@ class InterpreterTest(unittest.TestCase):
 
     def test_evaluate_binary_divide_by_zero(self):
         with self.assertRaisesRegex(InterpretError, 'Division by zero'):
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Literal(value=5),
                     operator=Token(TokenType.SLASH, '/', None, 1),
@@ -218,7 +213,7 @@ class InterpreterTest(unittest.TestCase):
     def test_evaluate_chained_binary_ops(self):
         self.assertEqual(
             420,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Binary(
                         left=Literal(4),
@@ -238,7 +233,7 @@ class InterpreterTest(unittest.TestCase):
     def test_evaluate_string_concatenation_with_plus(self):
         self.assertEqual(
             'helloWorld',
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Literal(value='hello'),
                     operator=Token(TokenType.PLUS, '+', None, 1),
@@ -250,7 +245,7 @@ class InterpreterTest(unittest.TestCase):
     def test_evaluate_less(self):
         self.assertEqual(
             True,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Literal(value=4),
                     operator=Token(TokenType.LESS, '<', None, 1),
@@ -260,7 +255,7 @@ class InterpreterTest(unittest.TestCase):
         )
         self.assertEqual(
             False,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Literal(value=5),
                     operator=Token(TokenType.LESS, '<', None, 1),
@@ -272,7 +267,7 @@ class InterpreterTest(unittest.TestCase):
     def test_evaluate_less_equal(self):
         self.assertEqual(
             True,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Literal(value=5),
                     operator=Token(TokenType.LESS_EQUAL, '<=', None, 1),
@@ -282,7 +277,7 @@ class InterpreterTest(unittest.TestCase):
         )
         self.assertEqual(
             False,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Literal(value=6),
                     operator=Token(TokenType.LESS_EQUAL, '<=', None, 1),
@@ -294,7 +289,7 @@ class InterpreterTest(unittest.TestCase):
     def test_evaluate_greater(self):
         self.assertEqual(
             True,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Literal(value=5),
                     operator=Token(TokenType.GREATER, '>', None, 1),
@@ -304,7 +299,7 @@ class InterpreterTest(unittest.TestCase):
         )
         self.assertEqual(
             False,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Literal(value=4),
                     operator=Token(TokenType.GREATER, '>', None, 1),
@@ -316,7 +311,7 @@ class InterpreterTest(unittest.TestCase):
     def test_evaluate_greater_equal(self):
         self.assertEqual(
             True,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Literal(value=6),
                     operator=Token(TokenType.GREATER_EQUAL, '>=', None, 1),
@@ -326,7 +321,7 @@ class InterpreterTest(unittest.TestCase):
         )
         self.assertEqual(
             False,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Literal(value=4),
                     operator=Token(TokenType.GREATER_EQUAL, '>=', None, 1),
@@ -338,7 +333,7 @@ class InterpreterTest(unittest.TestCase):
     def test_evaluate_bang_equal(self):
         self.assertEqual(
             True,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Literal(value=4),
                     operator=Token(TokenType.BANG_EQUAL, '!=', None, 1),
@@ -349,7 +344,7 @@ class InterpreterTest(unittest.TestCase):
 
         self.assertEqual(
             False,
-            self.interpreter.evaluate(
+            Interpreter().evaluate(
                 Binary(
                     left=Literal(value=5),
                     operator=Token(TokenType.BANG_EQUAL, '!=', None, 1),

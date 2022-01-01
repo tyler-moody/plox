@@ -3,9 +3,9 @@
 import argparse
 
 from interpreter import Interpreter, InterpretError
-from parser import Parser
+from parser import Parser, ParseError
 from printer import Printer
-from scanner import Scanner
+from scanner import Scanner, ScanError
 
 #  __  __       _
 # |  \/  | __ _(_)_ __
@@ -29,18 +29,21 @@ def run(text: str) -> None:
 
 
 def run_prompt() -> None:
-    # TODO: the prompt should report scanning and parsing errors, not swallow/ignore them
+    # TODO: support some amount of history / up key
 
-    # TODO: the prompt should have a long-lived interpreter to retain state
+    printer = Printer()
+    interpreter = Interpreter()
     while True:
         print('> ', end='')
         command = input()
-        if command == '':
-            break
         try:
-            run(command)
-        except InterpretError as e:
-            pass
+            tokens = Scanner(command).tokens()
+            expression = Parser(tokens).parse()
+            print(printer.print(expression))
+            print(interpreter.evaluate(expression))
+
+        except (ScanError, ParseError, InterpretError) as e:
+            print(e)
 
 
 def run_file(filename: str) -> None:
