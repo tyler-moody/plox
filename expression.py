@@ -1,14 +1,15 @@
 from dataclasses import dataclass
-from typing import Union
+from typing import TYPE_CHECKING, Union
 from typing_extensions import Protocol
 
 from tok import Token
+from visitor import Visitor
 
 Value = Union[bool, None, float, str]
 
 
 class Expression(Protocol):
-    def accept(self, visitor):
+    def accept(self, visitor: Visitor):
         ...
 
 
@@ -17,7 +18,7 @@ class Unary(Expression):
     operator: Token
     expression: Expression
 
-    def accept(self, visitor):
+    def accept(self, visitor: Visitor):
         return visitor.visit_unary(self)
 
 
@@ -27,7 +28,7 @@ class Binary(Expression):
     operator: Token
     right: Expression
 
-    def accept(self, visitor):
+    def accept(self, visitor: Visitor):
         return visitor.visit_binary(self)
 
 
@@ -35,7 +36,7 @@ class Binary(Expression):
 class Grouping(Expression):
     expression: Expression
 
-    def accept(self, visitor):
+    def accept(self, visitor: Visitor):
         return visitor.visit_grouping(self)
 
 
@@ -43,28 +44,5 @@ class Grouping(Expression):
 class Literal(Expression):
     value: Value
 
-    def accept(self, visitor):
+    def accept(self, visitor: Visitor):
         return visitor.visit_literal(self)
-
-
-# __     ___     _ _               _       _             __
-# \ \   / (_)___(_) |_ ___  _ __  (_)_ __ | |_ ___ _ __ / _| __ _  ___ ___
-#  \ \ / /| / __| | __/ _ \| '__| | | '_ \| __/ _ \ '__| |_ / _` |/ __/ _ \
-#   \ V / | \__ \ | || (_) | |    | | | | | ||  __/ |  |  _| (_| | (_|  __/
-#    \_/  |_|___/_|\__\___/|_|    |_|_| |_|\__\___|_|  |_|  \__,_|\___\___|
-#  FIGLET: Visitor interface
-#
-
-
-class Visitor(Protocol):
-    def visit_unary(self, unary: Unary):
-        ...
-
-    def visit_binary(self, binary: Binary):
-        ...
-
-    def visit_grouping(self, grouping: Grouping):
-        ...
-
-    def visit_literal(self, literal: Literal):
-        ...
