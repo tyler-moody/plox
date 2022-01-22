@@ -15,7 +15,12 @@ class Printer:
         return string
 
     def print(self, statements: Sequence[Statement]) -> List[str]:
-        return [statement.accept(self) for statement in statements]
+        strings = list()
+        for statement in statements:
+            s = statement.accept(self)
+            strings.append(s)
+        return strings
+        # return [statement.accept(self) for statement in statements]
 
     def visit_unary(self, unary: Unary) -> str:
         return self._parenthesize(unary.operator.lexeme, [unary.expression])

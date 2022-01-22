@@ -2,6 +2,7 @@ import unittest
 
 from expression import Binary, Grouping, Literal, Unary
 from printer import Printer
+from statement import Print
 from tok import Token, TokenType
 
 
@@ -34,3 +35,9 @@ class PrinterTest(unittest.TestCase):
         expression = Binary(left=left, operator=operator, right=right)
         printer = Printer()
         self.assertEqual(['(* (- 123) (group 45.67))'], printer.print([expression]))
+
+    def test_print_statement(self):
+        message = 'hello'
+        statement = Print(Literal(value=message))
+        printer = Printer()
+        self.assertEqual([message], printer.print([statement]))

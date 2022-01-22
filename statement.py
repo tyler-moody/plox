@@ -5,7 +5,6 @@ import expression
 from visitor import Visitor
 
 
-
 class Statement(Protocol):
     def accept(self, visitor: Visitor):
         ...
@@ -16,7 +15,7 @@ class Expression:
     expression: expression.Expression
 
     def accept(self, visitor: Visitor):
-        visitor.visit_expression_statement(self)
+        return visitor.visit_expression_statement(self)
 
 
 @dataclass
@@ -24,4 +23,4 @@ class Print:
     expression: expression.Expression
 
     def accept(self, visitor: Visitor):
-        visitor.visit_print_statement(self)
+        return visitor.visit_print_statement(self)
