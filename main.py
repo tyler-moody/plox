@@ -43,6 +43,8 @@ class Application:
 
     def run_file(self, filename: str) -> None:
         # TODO: running a file with syntax errors should report all errors
+        # TODO add a flag to control whether redefining a variable is an error
+        #      enable it for this path, not for the prompt
         with open(filename) as f:
             text = f.read()
             try:

@@ -11,13 +11,13 @@ class ParserTest(unittest.TestCase):
             Parser([]).parse()
 
     def test_parse_eof(self):
-        with self.assertRaisesRegex(ParseError, 'Expected expression'):
-            Parser(
-                [
-                    Token(TokenType.SEMICOLON, ';', None, 1),
-                    Token(TokenType.EOF, '', None, 1),
-                ]
-            ).parse()
+        statements = Parser(
+            [
+                Token(TokenType.SEMICOLON, ';', None, 1),
+                Token(TokenType.EOF, '', None, 1),
+            ]
+        ).parse()
+        self.assertEqual([], statements)
 
     #             _
     #  _ __  _ __(_)_ __ ___   __ _ _ __ _   _
@@ -85,15 +85,15 @@ class ParserTest(unittest.TestCase):
         self.assertEqual(expected, Parser(tokens).parse()[0].expression)
 
     def test_parse_unmatched_left_paren(self):
-        with self.assertRaisesRegex(ParseError, 'Expected "\)" after "\("'):
-            Parser(
-                tokens=[
-                    Token(TokenType.LEFT_PAREN, '(', None, 1),
-                    Token(TokenType.NUMBER, '45.67', 45.67, 1),
-                    # missing close paren
-                    Token(TokenType.EOF, '', None, 1),
-                ]
-            ).parse()
+        statements = Parser(
+            tokens=[
+                Token(TokenType.LEFT_PAREN, '(', None, 1),
+                Token(TokenType.NUMBER, '45.67', 45.67, 1),
+                # missing close paren
+                Token(TokenType.EOF, '', None, 1),
+            ]
+        ).parse()
+        self.assertEqual([], statements)
 
     #  _   _ _ __   __ _ _ __ _   _
     # | | | | '_ \ / _` | '__| | | |

@@ -22,7 +22,9 @@ class Parser:
     def parse(self) -> List[Statement]:
         statements = []
         while not self._isAtEnd():
-            statements.append(self._declaration())
+            statement = self._declaration()
+            if statement:
+                statements.append(statement)
         return statements
 
     #      _        _                         _
