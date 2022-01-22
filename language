@@ -12,6 +12,15 @@ Syntactic Grammar
 
 Each rule in the grammar matches expressions at its precedence or higher
 
+program ->              statement* EOF ;
+
+statement ->            expressionStatement
+                        | printStatement ;
+
+expressionStatement ->  expression ";" ;
+
+printStatement ->       "print" expression ";" ;
+
 expression ->           equality ;
 
 equality ->             comparison (("==" | "!=") comparison)* ;

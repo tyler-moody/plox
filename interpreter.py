@@ -1,6 +1,9 @@
-from typing import Union
+from typing import List, Union
 
 from expression import Binary, Expression, Grouping, Literal, Unary, Value
+from output import Outputter, StdoutOutputter
+from statement import Print, Statement
+from statement import Expression as ExpressionStatement
 from tok import Token, TokenType
 
 
@@ -14,8 +17,18 @@ class InterpretError(Exception):
 
 
 class Interpreter:
+    def __init__(self, outputter: Outputter = StdoutOutputter()):
+        self.outputter = outputter
+
+    def interpret(self, statements: List[Statement]) -> None:
+        for statement in statements:
+            self._execute(statement)
+
     def evaluate(self, expression: Expression) -> Value:
         return expression.accept(self)
+
+    def _execute(self, statement: Statement) -> None:
+        statement.accept(self)
 
     def _error(self, line: int, message: str) -> InterpretError:
         m = f'line {line} {message}'
@@ -104,3 +117,9 @@ class Interpreter:
         if type(value) in [int, float]:
             return float(value)
         return value
+
+    def visit_expression_statement(self, statement: ExpressionStatement) -> None:
+        return self.evaluate(statement.expression)
+
+    def visit_print_statement(self, statement: Print) -> None:
+        self.outputter.out(self.evaluate(statement.expression))

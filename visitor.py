@@ -14,3 +14,9 @@ class Visitor(Protocol):
 
     def visit_literal(self, literal: Literal):
         ...
+
+    def visit_expression_statement(self, statement: Expression):
+        ...
+
+    def visit_print_statement(self, statement: Print):
+        ...

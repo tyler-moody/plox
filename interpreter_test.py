@@ -4,18 +4,31 @@ from typing import Any
 
 from expression import Binary, Grouping, Literal, Unary
 from interpreter import InterpretError, Interpreter
+from output import TestOutputter
+from statement import Print
 from tok import Token, TokenType
 
 
-class InterpreterTest(unittest.TestCase):
-    def test_evaluate_literals(self):
+class ExecuteTest(unittest.TestCase):
+    def test_execute_print(self):
+        outputter = TestOutputter()
+        message = 'hello'
+        statement = Print(Literal(value=message))
+        Interpreter(outputter).evaluate(statement)
+        self.assertEqual(message, outputter.message)
+
+    # expression statement execution not tested because it has no observable side effects
+
+
+class EvaluateTest(unittest.TestCase):
+    def test_literals(self):
         self.assertEqual(False, Interpreter().evaluate(Literal(value=False)))
         self.assertEqual(True, Interpreter().evaluate(Literal(value=True)))
         self.assertEqual(None, Interpreter().evaluate(Literal(value=None)))
         self.assertEqual(5, Interpreter().evaluate(Literal(value=5)))
         self.assertEqual('string', Interpreter().evaluate(Literal(value='string')))
 
-    def test_evaluate_grouping(self):
+    def test_grouping(self):
         self.assertEqual(
             5, Interpreter().evaluate(Grouping(expression=Literal(value=5)))
         )
@@ -28,7 +41,7 @@ class InterpreterTest(unittest.TestCase):
     #  FIGLET: unary
     #
 
-    def test_evaluate_unary(self):
+    def test_unary(self):
         self.assertEqual(
             -5,
             Interpreter().evaluate(
@@ -49,7 +62,7 @@ class InterpreterTest(unittest.TestCase):
             ),
         )
 
-    def test_evaluate_illegal_unary_op(self):
+    def test_illegal_unary_op(self):
         with self.assertRaisesRegex(InterpretError, 'Illegal unary operator'):
             Interpreter().evaluate(
                 Unary(
@@ -66,7 +79,7 @@ class InterpreterTest(unittest.TestCase):
     #  FIGLET: truthiness
     #
 
-    def test_evaluate_false_is_false(self):
+    def test_false_is_false(self):
         self.assertEqual(
             True,
             Interpreter().evaluate(
@@ -77,7 +90,7 @@ class InterpreterTest(unittest.TestCase):
             ),
         )
 
-    def test_evaluate_none_is_false(self):
+    def test_none_is_false(self):
         self.assertEqual(
             True,
             Interpreter().evaluate(
@@ -88,7 +101,7 @@ class InterpreterTest(unittest.TestCase):
             ),
         )
 
-    def test_evaluate_string_is_true(self):
+    def test_string_is_true(self):
         self.assertEqual(
             False,
             Interpreter().evaluate(
@@ -109,7 +122,7 @@ class InterpreterTest(unittest.TestCase):
             ),
         )
 
-    def test_evaluate_zero_is_false(self):
+    def test_zero_is_false(self):
         self.assertEqual(
             True,
             Interpreter().evaluate(
@@ -120,7 +133,7 @@ class InterpreterTest(unittest.TestCase):
             ),
         )
 
-    def test_evaluate_nonzero_number_is_true(self):
+    def test_nonzero_number_is_true(self):
         self.assertEqual(
             False,
             Interpreter().evaluate(
@@ -140,7 +153,7 @@ class InterpreterTest(unittest.TestCase):
     #  FIGLET: binary
     #
 
-    def test_evaluate_mismatched_binary_operands(self):
+    def test_mismatched_binary_operands(self):
         with self.assertRaisesRegex(
             InterpretError, 'both operands must be float or str'
         ):
@@ -152,7 +165,7 @@ class InterpreterTest(unittest.TestCase):
                 )
             ),
 
-    def test_evaluate_binary_plus(self):
+    def test_binary_plus(self):
         self.assertEqual(
             5,
             Interpreter().evaluate(
@@ -164,7 +177,7 @@ class InterpreterTest(unittest.TestCase):
             ),
         )
 
-    def test_evaluate_binary_minus(self):
+    def test_binary_minus(self):
         self.assertEqual(
             5,
             Interpreter().evaluate(
@@ -176,7 +189,7 @@ class InterpreterTest(unittest.TestCase):
             ),
         )
 
-    def test_evaluate_binary_multiply(self):
+    def test_binary_multiply(self):
         self.assertEqual(
             35,
             Interpreter().evaluate(
@@ -188,7 +201,7 @@ class InterpreterTest(unittest.TestCase):
             ),
         )
 
-    def test_evaluate_binary_divide(self):
+    def test_binary_divide(self):
         self.assertEqual(
             5,
             Interpreter().evaluate(
@@ -200,7 +213,7 @@ class InterpreterTest(unittest.TestCase):
             ),
         )
 
-    def test_evaluate_binary_divide_by_zero(self):
+    def test_binary_divide_by_zero(self):
         with self.assertRaisesRegex(InterpretError, 'Division by zero'):
             Interpreter().evaluate(
                 Binary(
@@ -210,7 +223,7 @@ class InterpreterTest(unittest.TestCase):
                 )
             )
 
-    def test_evaluate_chained_binary_ops(self):
+    def test_chained_binary_ops(self):
         self.assertEqual(
             420,
             Interpreter().evaluate(
@@ -230,7 +243,7 @@ class InterpreterTest(unittest.TestCase):
             ),
         )
 
-    def test_evaluate_string_concatenation_with_plus(self):
+    def test_string_concatenation_with_plus(self):
         self.assertEqual(
             'helloWorld',
             Interpreter().evaluate(
@@ -242,7 +255,7 @@ class InterpreterTest(unittest.TestCase):
             ),
         )
 
-    def test_evaluate_less(self):
+    def test_less(self):
         self.assertEqual(
             True,
             Interpreter().evaluate(
@@ -264,7 +277,7 @@ class InterpreterTest(unittest.TestCase):
             ),
         )
 
-    def test_evaluate_less_equal(self):
+    def test_less_equal(self):
         self.assertEqual(
             True,
             Interpreter().evaluate(
@@ -286,7 +299,7 @@ class InterpreterTest(unittest.TestCase):
             ),
         )
 
-    def test_evaluate_greater(self):
+    def test_greater(self):
         self.assertEqual(
             True,
             Interpreter().evaluate(
@@ -308,7 +321,7 @@ class InterpreterTest(unittest.TestCase):
             ),
         )
 
-    def test_evaluate_greater_equal(self):
+    def test_greater_equal(self):
         self.assertEqual(
             True,
             Interpreter().evaluate(
@@ -330,7 +343,7 @@ class InterpreterTest(unittest.TestCase):
             ),
         )
 
-    def test_evaluate_bang_equal(self):
+    def test_bang_equal(self):
         self.assertEqual(
             True,
             Interpreter().evaluate(
@@ -354,7 +367,7 @@ class InterpreterTest(unittest.TestCase):
         )
 
 
-class EqualityTest(unittest.TestCase):
+class EvaluateEqualityTest(unittest.TestCase):
     def do_test(self, expected: bool, left: Any, right: Any) -> None:
         self.assertEqual(
             expected,
@@ -395,7 +408,7 @@ class EqualityTest(unittest.TestCase):
         self.expect_not_equal(None, 'foo')
 
 
-class InEqualityTest(unittest.TestCase):
+class EvaluateInequalityTest(unittest.TestCase):
     def do_test(self, expected: bool, left: Any, right: Any) -> None:
         self.assertEqual(
             expected,

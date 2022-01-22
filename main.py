@@ -7,14 +7,6 @@ from parser import Parser, ParseError
 from printer import Printer
 from scanner import Scanner, ScanError
 
-#  __  __       _
-# |  \/  | __ _(_)_ __
-# | |\/| |/ _` | | '_ \
-# | |  | | (_| | | | | |
-# |_|  |_|\__,_|_|_| |_|
-#  FIGLET: Main
-#
-
 
 def run(text: str) -> None:
     scanner = Scanner(text)
@@ -38,9 +30,8 @@ def run_prompt() -> None:
         command = input()
         try:
             tokens = Scanner(command).tokens()
-            expression = Parser(tokens).parse()
-            print(printer.print(expression))
-            print(interpreter.evaluate(expression))
+            statements = Parser(tokens).parse()
+            interpreter.interpret(statements)
 
         except (ScanError, ParseError, InterpretError) as e:
             print(e)

@@ -1,6 +1,8 @@
 from typing import List
 
 from expression import Binary, Expression, Grouping, Literal, Unary
+from statement import Print, Statement
+from statement import Expression as ExpressionStatement
 
 
 class Printer:
@@ -12,8 +14,8 @@ class Printer:
         string += ')'
         return string
 
-    def print(self, expression: Expression) -> str:
-        return expression.accept(self)
+    def print(self, statement: Statement) -> str:
+        return statement.accept(self)
 
     def visit_unary(self, unary: Unary) -> str:
         return self._parenthesize(unary.operator.lexeme, [unary.expression])
@@ -26,3 +28,9 @@ class Printer:
 
     def visit_literal(self, literal: Literal) -> str:
         return str(literal.value)
+
+    def visit_expression_statement(self, statement: ExpressionStatement) -> str:
+        return statement.expression.accept(self)
+
+    def visit_print_statement(self, statement: Print) -> str:
+        return statement.expression.accept(self)

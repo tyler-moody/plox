@@ -1,6 +1,8 @@
-from typing import Optional, Sequence
+from typing import List, Optional, Sequence
 
+import statement
 from expression import Binary, Expression, Grouping, Literal, Unary
+from statement import Statement
 from tok import Token, TokenType
 
 
@@ -16,8 +18,11 @@ class Parser:
         self._tokens = tokens
         self._current = 0
 
-    def parse(self) -> Optional[Expression]:
-        return self._expression()
+    def parse(self) -> List[Statement]:
+        statements = []
+        while not self._isAtEnd():
+            statements.append(self._statement())
+        return statements
 
     #      _        _                         _
     #  ___| |_ __ _| |_ ___    __ _ _ __   __| |
@@ -117,6 +122,21 @@ class Parser:
     # |_|                           |___/
     #  FIGLET: parsing rules
     #
+
+    def _statement(self) -> Statement:
+        if self._match([TokenType.PRINT]):
+            return self._printStatement()
+        return self._expressionStatement()
+
+    def _printStatement(self) -> Statement:
+        expression = self._expression()
+        self._consume(TokenType.SEMICOLON, "Expected ';' after value")
+        return statement.Print(expression=expression)
+
+    def _expressionStatement(self) -> Statement:
+        expression = self._expression()
+        self._consume(TokenType.SEMICOLON, "Expected ';' after expression")
+        return statement.Expression(expression=expression)
 
     def _expression(self) -> Expression:
         return self._equality()
