@@ -316,3 +316,19 @@ class ParserTest(unittest.TestCase):
             right=Literal(value=5),
         )
         self.assertEqual(expected, Parser(tokens).parse()[0].expression)
+
+    #  ____  _        _                            _
+    # / ___|| |_ __ _| |_ ___ _ __ ___   ___ _ __ | |_ ___
+    # \___ \| __/ _` | __/ _ \ '_ ` _ \ / _ \ '_ \| __/ __|
+    #  ___) | || (_| | ||  __/ | | | | |  __/ | | | |_\__ \
+    # |____/ \__\__,_|\__\___|_| |_| |_|\___|_| |_|\__|___/
+    #  FIGLET: Statements
+    #
+
+    def test_synchronize(self):
+        # TODO synchronize after a parse error
+        pass
+
+    def test_variable(self):
+        # TODO test a variable statement
+        pass

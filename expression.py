@@ -46,3 +46,11 @@ class Literal(Expression):
 
     def accept(self, visitor: Visitor):
         return visitor.visit_literal(self)
+
+
+@dataclass
+class Variable(Expression):
+    name: str
+
+    def accept(self, visitor: Visitor):
+        return visitor.visit_variable_expression(self)

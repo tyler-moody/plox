@@ -24,3 +24,12 @@ class Print:
 
     def accept(self, visitor: Visitor):
         return visitor.visit_print_statement(self)
+
+
+@dataclass
+class Variable:
+    name: str
+    initializer: expression.Expression
+
+    def accept(self, visitor: Visitor):
+        return visitor.visit_variable_statement(self)

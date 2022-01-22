@@ -2,6 +2,7 @@ from typing import List, Optional, Sequence
 
 import statement
 from expression import Binary, Expression, Grouping, Literal, Unary
+from expression import Variable as VariableExpression
 from statement import Statement
 from tok import Token, TokenType
 
@@ -21,7 +22,7 @@ class Parser:
     def parse(self) -> List[Statement]:
         statements = []
         while not self._isAtEnd():
-            statements.append(self._statement())
+            statements.append(self._declaration())
         return statements
 
     #      _        _                         _
@@ -123,10 +124,27 @@ class Parser:
     #  FIGLET: parsing rules
     #
 
+    def _declaration(self) -> Statement:
+        try:
+            if self._match([TokenType.VAR]):
+                return self._variableDeclaration()
+            return self._statement()
+        except ParseError:
+            self._synchronize()
+            return
+
     def _statement(self) -> Statement:
         if self._match([TokenType.PRINT]):
             return self._printStatement()
         return self._expressionStatement()
+
+    def _variableDeclaration(self) -> Statement:
+        name = self._consume(TokenType.IDENTIFIER, 'Expected a variable name')
+        initializer = None
+        if self._match(TokenType.EQUAL):
+            initializer = self._expression()
+        self._consume(TokenType.SEMICOLON, "Expected ';' after declaration")
+        return VariableStatement(name, initializer)
 
     def _printStatement(self) -> Statement:
         expression = self._expression()
@@ -206,5 +224,7 @@ class Parser:
             expression = self._expression()
             self._consume(TokenType.RIGHT_PAREN, 'Expected ")" after "("')
             return Grouping(expression=expression)
+        elif self._match([TokenType.IDENTIFIER]):
+            return VariableExpression(self._previous())
 
         raise self._error(self._peek(), 'Expected expression')

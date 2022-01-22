@@ -12,7 +12,10 @@ Syntactic Grammar
 
 Each rule in the grammar matches expressions at its precedence or higher
 
-program ->              statement* EOF ;
+program ->              declaration* EOF ;
+
+declaration ->          variableDeclaration
+                        | statement ;                        
 
 statement ->            expressionStatement
                         | printStatement ;
@@ -34,5 +37,7 @@ multiplicative ->       unary (("/" | "*") unary)* ;
 unary ->                ("-" | "!") unary 
                         | primary ;
 
-primary ->              NUMBER | STRING | "true" | "false" | "nil" 
-                        | "(" expression ")" ;
+primary ->              "true" | "false" | "nil" 
+                        | NUMBER | STRING
+                        | "(" expression ")" 
+                        | IDENTIFIER ;
