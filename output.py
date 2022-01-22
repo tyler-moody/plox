@@ -15,6 +15,8 @@ class StdoutOutputter:
 class TestOutputter:
     def __init__(self):
         self.message: Optional[str] = None
+        self.previous: Optional[str] = None
 
     def out(self, s: str, end: str = '\n') -> None:
+        self.previous = self.message
         self.message = s

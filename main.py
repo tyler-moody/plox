@@ -19,41 +19,36 @@ class Application:
         self.inputter = inputter
         self.outputter = outputter
 
-    def run(text: str) -> None:
-        scanner = Scanner(text)
-        tokens = scanner.tokens()
-        parser = Parser(tokens)
-        expression = parser.parse()
-        if expression:
-            printer = Printer()
-            self.outputter.out(printer.print(expression))
-            interpreter = Interpreter()
-            self.outputter.out(interpreter.evaluate(expression))
-
     def run_prompt(self) -> None:
         # TODO: support some amount of history / up key
 
         printer = Printer()
-        interpreter = Interpreter()
+        interpreter = Interpreter(self.outputter)
         while True:
-            self.outputter.out('> ', end='')
-            command = self.inputter.input()
             try:
-                tokens = Scanner(command).tokens()
+                self.outputter.out('> ', end='')
+                line = self.inputter.input()
+                tokens = Scanner(line).tokens()
                 statements = Parser(tokens).parse()
                 interpreter.interpret(statements)
 
             except (ScanError, ParseError, InterpretError) as e:
                 self.outputter.out(e)
+                break
+            except EOFError:
+                break
 
     def run_file(self, filename: str) -> None:
         # TODO: running a file with syntax errors should report all errors
         with open(filename) as f:
             text = f.read()
             try:
-                run(text)
-            except InterpretError as e:
-                exit(70)
+                tokens = Scanner(text).tokens()
+                statements = Parser(tokens).parse()
+                interpreter = Interpreter(self.outputter)
+                interpreter.interpret(statements)
+            except (ScanError, ParseError, InterpretError) as e:
+                self.outputter.out(e)
 
 
 def parse_args() -> argparse.Namespace:
@@ -72,5 +67,4 @@ def main(args: argparse.Namespace) -> None:
 
 
 if __name__ == '__main__':
-
     main(parse_args())

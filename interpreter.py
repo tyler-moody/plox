@@ -122,4 +122,4 @@ class Interpreter:
         return self.evaluate(statement.expression)
 
     def visit_print_statement(self, statement: Print) -> None:
-        self.outputter.out(self.evaluate(statement.expression))
+        self.outputter.out(str(self.evaluate(statement.expression)))
