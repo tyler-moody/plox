@@ -1,4 +1,4 @@
-from typing import List, Optional, Sequence
+from typing import List, Optional, Sequence, Union
 
 import statement
 from expression import Binary, Expression, Grouping, Literal, Unary
@@ -84,7 +84,9 @@ class Parser:
             return False
         return self._peek().token_type == token_type
 
-    def _match(self, token_types: Sequence[TokenType]) -> bool:
+    def _match(self, token_types: Union[TokenType, Sequence[TokenType]]) -> bool:
+        if not isinstance(token_types, list):
+            token_types = [token_types]
         for token_type in token_types:
             if self._check(token_type):
                 self._advance()
@@ -126,7 +128,7 @@ class Parser:
 
     def _declaration(self) -> Statement:
         try:
-            if self._match([TokenType.VAR]):
+            if self._match(TokenType.VAR):
                 return self._variableDeclaration()
             return self._statement()
         except ParseError:
@@ -134,7 +136,7 @@ class Parser:
             return
 
     def _statement(self) -> Statement:
-        if self._match([TokenType.PRINT]):
+        if self._match(TokenType.PRINT):
             return self._printStatement()
         return self._expressionStatement()
 
@@ -210,21 +212,21 @@ class Parser:
         return self._primary()
 
     def _primary(self) -> Expression:
-        if self._match([TokenType.FALSE]):
+        if self._match(TokenType.FALSE):
             return Literal(value=False)
-        elif self._match([TokenType.TRUE]):
+        elif self._match(TokenType.TRUE):
             return Literal(value=True)
-        elif self._match([TokenType.NIL]):
+        elif self._match(TokenType.NIL):
             return Literal(value=None)
-        elif self._match([TokenType.NUMBER]):
+        elif self._match(TokenType.NUMBER):
             return Literal(value=float(self._previous().literal))
-        elif self._match([TokenType.STRING]):
+        elif self._match(TokenType.STRING):
             return Literal(value=self._previous().literal)
-        elif self._match([TokenType.LEFT_PAREN]):
+        elif self._match(TokenType.LEFT_PAREN):
             expression = self._expression()
             self._consume(TokenType.RIGHT_PAREN, 'Expected ")" after "("')
             return Grouping(expression=expression)
-        elif self._match([TokenType.IDENTIFIER]):
+        elif self._match(TokenType.IDENTIFIER):
             return VariableExpression(self._previous())
 
         raise self._error(self._peek(), 'Expected expression')
